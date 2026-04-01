@@ -1,0 +1,35 @@
+name: Gerar APK Android
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Baixar o código
+      uses: actions/checkout@v3
+
+    - name: Configurar o Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Colocar a Chave da API no projeto
+      run: echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > local.properties
+
+    - name: Dar permissão para o construtor (Gradle)
+      run: chmod +x ./gradlew
+
+    - name: Construir o APK
+      run: ./gradlew assembleDebug
+
+    - name: Salvar o APK para Download
+      uses: actions/upload-artifact@v3
+      with:
+        name: Meu-App-Gemini
+        path: app/build/outputs/apk/debug/app-debug.apk
