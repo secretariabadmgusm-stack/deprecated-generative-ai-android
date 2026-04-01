@@ -10,27 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Baixar o código
+    - name: Clonar o repositório
       uses: actions/checkout@v4
 
     - name: Configurar o Java
       uses: actions/setup-java@v4
       with:
-        distribution: 'temurin'
+        distribution: 'zulu'
         java-version: '17'
 
-    - name: Colocar a Chave da API no projeto
-      run: echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > local.properties
+    - name: Adicionar Chave da API do Gemini
+      run: echo "apiKey=${{ secrets.gemini_api_key }}" > local.properties
 
-    - name: Dar permissão para o construtor (Gradle)
+    - name: Dar permissão ao Gradle
       run: chmod +x ./gradlew
 
-    - name: Construir o APK
+    - name: Construir o Aplicativo
       run: ./gradlew assembleDebug
+
+    - name: Organizar os arquivos APK
+      run: |
+        mkdir -p apk-upload
+        find . -name "*.apk" -exec cp {} apk-upload/ \;
 
     - name: Salvar o APK para Download
       uses: actions/upload-artifact@v4
       with:
-        name: Meu-App-Gemini
-        path: "**/build/outputs/apk/**/*.apk"
-
+        name: App-Gemini-Pronto
+        path: apk-upload/*.apk
