@@ -25,16 +25,17 @@ jobs:
     - name: Dar permissão ao Gradle
       run: chmod +x ./gradlew
 
-    - name: Construir o Aplicativo
-      run: ./gradlew assembleDebug
+    - name: Construir Tudo (App e Biblioteca)
+      run: ./gradlew build assembleDebug
 
-    - name: Organizar os arquivos APK
+    - name: Cacada aos arquivos gerados
       run: |
-        mkdir -p apk-upload
-        find . -name "*.apk" -exec cp {} apk-upload/ \;
+        mkdir -p arquivos-gerados
+        find . -name "*.apk" -exec cp {} arquivos-gerados/ \;
+        find . -name "*.aar" -exec cp {} arquivos-gerados/ \;
 
-    - name: Salvar o APK para Download
+    - name: Salvar os arquivos para Download
       uses: actions/upload-artifact@v4
       with:
         name: App-Gemini-Pronto
-        path: apk-upload/*.apk
+        path: arquivos-gerados/
